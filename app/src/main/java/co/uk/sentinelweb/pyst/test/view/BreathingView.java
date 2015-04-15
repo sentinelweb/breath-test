@@ -5,13 +5,11 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 
@@ -61,7 +59,7 @@ public class BreathingView extends View {
     private Paint mBreathPaint;
 
     /** the curve height (px) */
-    private int mCurveHeight;
+    private int mCurveAmplitude;
     /** Path object to draw the curve*/
     Path curvePath;
     float density = 1;
@@ -155,6 +153,9 @@ public class BreathingView extends View {
 
     /**
      * Checking for the breath changes array
+     * Remove old item
+     * adds new item as needed to display in the current time window
+     * remove items after the first that are past the rhs of the screen
      */
     private void checkBreaths() {
         // now
@@ -172,7 +173,7 @@ public class BreathingView extends View {
                 lowestDisplayed = i;
             }
         }
-        // remove all tiem below lowest displayed
+        // remove all items below lowest displayed
         while (lowestDisplayed>2) {
             mBreathChanges.remove(0);
             lowestDisplayed--;
@@ -220,7 +221,7 @@ public class BreathingView extends View {
     protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         // set the curve height
-        mCurveHeight=h/4;
+        mCurveAmplitude = h/3;
     }
 
     @Override
@@ -228,15 +229,17 @@ public class BreathingView extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    //TODO remove any new cobject creation to reuse said objects
+    //re-used points and breaths
     final PointF mCurrentPoint = new PointF();
     final PointF mNowPoint = new PointF();
     final PointF mLastPoint = new PointF();
+    // the scale ms/px (x) and the time offset(y)
+    final PointF mScaleAndOffset = new PointF();
+    final PointF mDotPoint = new PointF();
     /** reused control points */
     final PointF c1 = new PointF();
     final PointF c2 = new PointF();
-    final PointF mScaleAndOffset = new PointF();
-    final PointF mDotPoint = new PointF();
+    /** Special breath set at now used to calc the dot position */
     final Breath nowBreath = new Breath(null,SystemClock.uptimeMillis());
     @Override
     protected void onDraw(final Canvas canvas) {
@@ -246,14 +249,19 @@ public class BreathingView extends View {
         // draw axis.
         canvas.drawLine(getMeasuredWidth()/2,0,getMeasuredWidth()/2,getMeasuredHeight(), mAxisPaint);
         canvas.drawLine(0, getMeasuredHeight() / 2, getMeasuredWidth(), getMeasuredHeight() / 2, mAxisPaint);
+        // make the path to plot
         makePath(null);
         canvas.drawPath(curvePath, mCurvePaint);
+
+        // get the window scaling and offset
         getScaleAndOffset(mScaleAndOffset);
 
+        // draw breath inflexion points
         for (Breath b : mBreathChanges) {
             getBreathPointOnScreen(mScaleAndOffset,mCurrentPoint,b);
             canvas.drawCircle(mCurrentPoint.x,mCurrentPoint.y,2*density,mBreathPaint);
         }
+        // get the next and last breath to plot the dot
         Breath lastBreath = null;
         Breath nextBreath = null;
         boolean lower=true;
@@ -265,18 +273,24 @@ public class BreathingView extends View {
                 break;
             }
         }
+        // plot the dot
         if (lastBreath!=null && nextBreath!=null) {
+            // set now, next and last points from nowBreath, nextbreath and lastBreath respectively
             getBreathPointOnScreen(mScaleAndOffset,mCurrentPoint,nextBreath);
             getBreathPointOnScreen(mScaleAndOffset, mLastPoint, lastBreath);
             nowBreath.setTime(now);
             getBreathPointOnScreen(mScaleAndOffset, mNowPoint, nowBreath);
+            // calculate the ration by liner interpolation of x coordinates
             float ratio = (mNowPoint.x-mLastPoint.x)/(mCurrentPoint.x-mLastPoint.x);
             setControlPoints(mCurrentPoint, mLastPoint);
+            // calculate the dot point
             calculateBezierPoint(ratio, mLastPoint, c1, c2, mCurrentPoint, mDotPoint);
             // now the point is in mDotPoint we just need y
+            //draw next and last breath outlines
             mDotPaint.setStyle(Paint.Style.STROKE);
             canvas.drawCircle(mCurrentPoint.x, mCurrentPoint.y, 10 * density, mDotPaint);
             canvas.drawCircle(mLastPoint.x, mLastPoint.y, 10*density, mDotPaint);
+            // paint the dot
             mDotPaint.setStyle(Paint.Style.FILL_AND_STROKE);
             canvas.drawCircle(getMeasuredWidth()/2, mDotPoint.y, 20*density, mDotPaint);
         }
@@ -332,7 +346,7 @@ public class BreathingView extends View {
         final long now = SystemClock.uptimeMillis();
         scaleAndOffsetMs.x = getMeasuredWidth()/(float)mHorizontalTime;// px/ms
         scaleAndOffsetMs.y = now - mHorizontalTime/2;
-        Log.d("path", "start: sc:" + scaleAndOffsetMs.x + ":" + scaleAndOffsetMs.y);
+        //Log.d("path", "start: sc:" + scaleAndOffsetMs.x + ":" + scaleAndOffsetMs.y);
         return scaleAndOffsetMs;
     }
 
@@ -346,12 +360,14 @@ public class BreathingView extends View {
     private void getBreathPointOnScreen(final PointF scaleAndOffsetMs, final PointF p,  final Breath b) {
         final float msFromLeft = b.getTime() - scaleAndOffsetMs.y;
         p.x = msFromLeft * scaleAndOffsetMs.x /**/;// ms * px/ms = px
-        if (b.isRise()!=null) p.y = getMeasuredHeight()/2+(b.isRise() ? -mCurveHeight : mCurveHeight);
+        if (b.isRise()!=null) p.y = getMeasuredHeight()/2+(b.isRise() ? -mCurveAmplitude : mCurveAmplitude);
     }
 
     /**
      * from: http://stackoverflow.com/questions/9494167/move-an-object-on-on-a-b%C3%A9zier-curve-path
-     *  t is time(value of 0.0f-1.0f; 0 is the start 1 is the end)
+     * calculates the beizer point at interval t [0..1]
+     *
+     * t is time(value of 0.0f-1.0f; 0 is the start 1 is the end)
      */
     PointF calculateBezierPoint(float t, PointF s, PointF c1, PointF c2, PointF e, PointF target) {
         final float u = 1 - t;
@@ -387,12 +403,12 @@ public class BreathingView extends View {
         mCurveColor = curveColor;
     }
 
-    public int getCurveHeight() {
-        return mCurveHeight;
+    public int getCurveAmplitude() {
+        return mCurveAmplitude;
     }
 
-    public void setCurveHeight(int curveHeight) {
-        mCurveHeight = curveHeight;
+    public void setCurveAmplitude(int curveAmplitude) {
+        mCurveAmplitude = curveAmplitude;
     }
 
     public int getDotColor() {

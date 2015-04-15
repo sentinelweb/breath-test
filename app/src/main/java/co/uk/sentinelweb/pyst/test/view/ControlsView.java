@@ -125,6 +125,10 @@ public class ControlsView extends RelativeLayout {
         mFallTimeSeekText.setText(Integer.toString(fall));
     }
 
+    /**
+     * sets the target view
+     * @return
+     */
     public BreathingView getTargetView() {
         return mTargetView;
     }

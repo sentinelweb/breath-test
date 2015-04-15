@@ -55,6 +55,9 @@ public class
 
     }
 
+    /**
+     * Loads the breath fragment
+     */
     private void loadViewBreathFragment() {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();

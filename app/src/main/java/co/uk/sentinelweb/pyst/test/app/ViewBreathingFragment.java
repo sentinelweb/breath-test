@@ -24,7 +24,7 @@ public class ViewBreathingFragment extends Fragment {
     Long mId;
     /** breath view */
     BreathingView mBreathView;
-    /** controls view */
+    /** Controls view */
     ControlsView mControlsView;
     /** Refresh button */
     Button mRefreshButton;
@@ -57,6 +57,7 @@ public class ViewBreathingFragment extends Fragment {
                 mBreathView.invalidate();
             }
         });
+        mRefreshButton.setVisibility(View.GONE);
         mControlsView=(ControlsView) rootView.findViewById(R.id.view_controls);
         mControlsView.setTargetView(mBreathView);
         return rootView;
@@ -65,6 +66,9 @@ public class ViewBreathingFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mBreathView=null;
+        mControlsView=null;
+        mRefreshButton=null;
     }
 
     @Override
