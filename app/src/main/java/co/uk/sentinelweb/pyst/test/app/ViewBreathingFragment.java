@@ -79,12 +79,13 @@ public class ViewBreathingFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
+        mBreathView.setUpdate(true);
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        mBreathView.setUpdate(false);
     }
 
     @Override

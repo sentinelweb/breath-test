@@ -45,7 +45,7 @@ public class BreathingView extends View {
 
     // timing
     boolean update = true;
-    int updateTime = 50;
+    int updateTime = 20;
     /** ui timing handler */
     private Handler mHandler;
 
@@ -63,8 +63,8 @@ public class BreathingView extends View {
     /** Path object to draw the curve*/
     Path curvePath;
     float density = 1;
-    private float mCubicOffsetPx;
-    private int mCubicOffset;
+//    private float mCubicOffsetPx;
+//    private int mCubicOffset;
     //PathInterpolator mDotInterploator;
 
     /**
@@ -128,8 +128,7 @@ public class BreathingView extends View {
 //        LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 //        layoutInflater.inflate(R.layout.view_user_header, this);
         density = getResources().getDisplayMetrics().density;
-        mCubicOffset = 30;
-        mCubicOffsetPx = mCubicOffset * density;
+//        setCubicOffsets();
         mCurveColor = getResources().getColor(R.color.blue_900);
         mAxisColor = getResources().getColor(R.color.grey_300);
         mDotColor = getResources().getColor(R.color.orange_700);
@@ -150,6 +149,11 @@ public class BreathingView extends View {
         curvePath = new Path();
         //mDotInterploator = new PathInterpolator(curvePath);
     }
+
+//    private void setCubicOffsets() {
+//        mCubicOffset = getMeasuredWidth()*mHorizontalTime;
+//        mCubicOffsetPx = mCubicOffset * density;
+//    }
 
     /**
      * Checking for the breath changes array
@@ -222,6 +226,7 @@ public class BreathingView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         // set the curve height
         mCurveAmplitude = h/3;
+        //setCubicOffsets();
     }
 
     @Override
@@ -329,9 +334,10 @@ public class BreathingView extends View {
     }
 
     private void setControlPoints(PointF mCurrentPoint, PointF mLastPoint) {
-        final float c1x = mLastPoint.x + mCubicOffsetPx;
+        final float cubicOffset = (mCurrentPoint.x - mLastPoint.x) /2;
+        final float c1x = mLastPoint.x + cubicOffset/*mCubicOffsetPx*/;
         final float c1y = mLastPoint.y;
-        final float c2x = mCurrentPoint.x - mCubicOffsetPx;
+        final float c2x = mCurrentPoint.x - cubicOffset;
         final float c2y = mCurrentPoint.y;
         c1.set(c1x,c1y);
         c2.set(c2x,c2y);
