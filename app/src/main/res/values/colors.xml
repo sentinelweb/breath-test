@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">@color/grey_100</color>
+    <color name="primaryDark">@color/grey_900</color>
+    <color name="accent">@color/orange_400</color>
+
+    <color name="selected">@color/red_400</color>
+    <color name="pressed">@color/blue_800</color>
+    <color name="disabled">@color/grey_600</color>
+    <color name="checked">@color/green_700</color>
+    <color name="focus">@color/teal_400</color>
+    <color name="transparent">#0000</color>
+    <color name="dark_transparent">#8000</color>
+    <color name="link">@color/teal_800</color>
+
+
+</resources>

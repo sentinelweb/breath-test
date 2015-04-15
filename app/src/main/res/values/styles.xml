@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ActionBar.Base" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:background">@color/primaryDark</item>
+    </style>
+    <style name="ActionBar.Pyst" parent="ActionBar.Base">
+
+    </style>
+    <style name="Link" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@color/link</item>
+    </style>
+</resources>

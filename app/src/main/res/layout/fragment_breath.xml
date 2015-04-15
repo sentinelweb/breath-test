@@ -1,0 +1,26 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+    <co.uk.sentinelweb.pyst.test.view.BreathingView
+        android:id="@+id/view_breath"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/material_default_margin"
+        android:background="@color/primary"
+        android:layout_above="@+id/view_controls"/>
+    <Button
+        android:id="@+id/refresh_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/refresh"
+        />
+
+    <co.uk.sentinelweb.pyst.test.view.ControlsView
+        android:id="@+id/view_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="@dimen/material_default_margin"
+        android:background="@color/grey_200"/>
+</RelativeLayout>

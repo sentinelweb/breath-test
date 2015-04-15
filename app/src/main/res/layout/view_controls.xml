@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_margin="@dimen/material_default_margin"
+    >
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time scale"/>
+    <TextView
+        android:id="@+id/view_controls_time_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="10"/>
+    <SeekBar
+        android:id="@+id/view_controls_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_controls_time_text"
+        android:max="60"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_controls_time"
+        android:text="Rise time"/>
+    <TextView
+        android:id="@+id/view_controls_rise_time_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_controls_time"
+        android:layout_alignParentRight="true"
+        android:text="10"/>
+    <SeekBar
+        android:id="@+id/view_controls_rise_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_controls_rise_time_text"
+        android:max="100"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_controls_rise_time"
+        android:text="Fall time"/>
+    <TextView
+        android:id="@+id/view_controls_fall_time_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_controls_rise_time"
+        android:layout_alignParentRight="true"
+        android:text="10"/>
+    <SeekBar
+        android:id="@+id/view_controls_fall_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_controls_fall_time_text"
+        android:max="100"/>
+</merge>
