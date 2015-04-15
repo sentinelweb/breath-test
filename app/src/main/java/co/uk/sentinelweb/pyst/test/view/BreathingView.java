@@ -430,7 +430,7 @@ public class BreathingView extends View {
     }
 
     public void setFallTime(long fallTime) {
-        mFallTime = fallTime;
+        mFallTime = Math.max(fallTime,100);
         clearFutureBreaths();
     }
 
@@ -439,7 +439,7 @@ public class BreathingView extends View {
     }
 
     public void setRiseTime(long riseTime) {
-        mRiseTime = riseTime;
+        mRiseTime = Math.max(riseTime,100);;
         clearFutureBreaths();
     }
 
